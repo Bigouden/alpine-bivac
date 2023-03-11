@@ -70,7 +70,7 @@ COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=500 ${RESTIC_BUILD_D
 COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=500 ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
 COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=500 ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
 COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=644 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
-HEALTHCHECK CMD curl --fail -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
+HEALTHCHECK CMD curl -s -f -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 ENTRYPOINT ["/bin/bivac"]
