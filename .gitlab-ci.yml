@@ -15,7 +15,7 @@ include:
 variables:
   HADOLINT_ALLOW_FAILURE: "true"
   PROMETHEUS_EXPORTER_PORT: "8182"
-  PROMETHEUS_EXPORTER_COMMAND: ["manage"]
+  PROMETHEUS_EXPORTER_COMMAND: "manage"
     
 stages:
   - Quality
