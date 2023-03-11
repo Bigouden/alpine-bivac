@@ -47,6 +47,7 @@ RUN apk add git \
                       -installsuffix cgo"
 
 FROM alpine:3.17
+LABEL maintainer="Thomas GUIRRIEC <thomas@guirriec.fr>"
 ARG RCLONE_BUILD_DIR="/go/src/github.com/rclone/rclone"
 ARG RCLONE_PKG="rclone"
 ARG RESTIC_BUILD_DIR="/go/src/github.com/restic/restic"
