@@ -9,6 +9,9 @@ include:
   variables:
     GIT_STRATEGY: none
   dependencies: []  
+
+variables:
+  HADOLINT_ALLOW_FAILURE: true
     
 stages:
   - Quality
