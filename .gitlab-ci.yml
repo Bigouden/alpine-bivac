@@ -1,6 +1,8 @@
 include:
   - project: 'Bigouden/gitlab-ci-templates'
     file: '.gitlab-ci-docker.yml'
+  - project: 'Bigouden/gitlab-ci-templates'
+    file: '.gitlab-ci-prometheus.yml'
 
 .standalone:
   image:
@@ -20,6 +22,7 @@ stages:
   - Security
   - Build
   - Commands
+  - Test
   - Inspect
   - Release
   - Clean
