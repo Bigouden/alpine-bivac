@@ -11,7 +11,7 @@ include:
   dependencies: []  
 
 variables:
-  HADOLINT_ALLOW_FAILURE: true
+  HADOLINT_ALLOW_FAILURE: "true"
     
 stages:
   - Quality
