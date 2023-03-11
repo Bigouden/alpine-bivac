@@ -57,6 +57,7 @@ ARG BIVAC_PKG="bivac"
 ENV BIVAC_SERVER_PSK=""
 ENV USERNAME="ansible"
 ENV UID="1000"
+COPY apk_packages /
 RUN xargs -a /apk_packages apk add --no-cache --update \
     && useradd -l -u ${UID} -U -s /bin/sh -m ${USERNAME} \
     && rm -rf \
