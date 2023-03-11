@@ -16,7 +16,7 @@ include:
   services:
     - name: $CONTAINER_TEST_IMAGE
       alias: exporter
-      command: ["manage"]
+      command: ["manager"]
   image: $CONTAINER_CLIENT_IMAGE
   before_script:
     - apk add --no-cache --update curl
