@@ -1,0 +1,58 @@
+include:
+  - project: 'Bigouden/gitlab-ci-templates'
+    file: '.gitlab-ci-docker.yml'
+  - project: 'Bigouden/gitlab-ci-templates'
+    file: '.gitlab-ci-prometheus.yml'
+
+.standalone:
+  image:
+    name: $CONTAINER_TEST_IMAGE
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []  
+
+.services:
+  services:
+    - name: $CONTAINER_TEST_IMAGE
+      alias: exporter
+      command: ["manager"]
+  image: $CONTAINER_CLIENT_IMAGE
+  before_script:
+    - apk add --no-cache --update curl
+  variables:
+    GIT_STRATEGY: none
+    BIVAC_ORCHESTRATOR: "docker"
+  dependencies: []
+
+variables:
+  HADOLINT_ALLOW_FAILURE: "true"
+  PROMETHEUS_EXPORTER_PORT: "8182"
+    
+stages:
+  - Quality
+  - Security
+  - Build
+  - Commands
+  - Test
+  - Inspect
+  - Release
+  - Clean
+
+Rclone:
+  stage: Commands
+  extends: .standalone
+  script:
+    - rclone version
+
+Restic: 
+  stage: Commands
+  extends: .standalone
+  script:
+    - restic version
+
+Bivac: 
+  stage: Commands
+  extends: .standalone
+  script:
+    - bivac
