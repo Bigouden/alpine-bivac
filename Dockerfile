@@ -54,7 +54,13 @@ ARG RESTIC_PKG="restic"
 ARG BIVAC_BUILD_DIR="/go/src/github.com/camptocamp/bivac"
 ARG BIVAC_PKG="bivac"
 ENV BIVAC_SERVER_PSK=""
-RUN apk add openssh-client
+RUN xargs -a /apk_packages apk add --no-cache --update \
+    && rm -rf \
+     /root/.ansible \
+     /root/.cache \
+     /tmp/* \
+     /var/cache/* 
+
 COPY --from=builder /etc/ssl /etc/ssl
 COPY --from=builder ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
 COPY --from=builder ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
