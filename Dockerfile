@@ -55,18 +55,22 @@ ARG RESTIC_PKG="restic"
 ARG BIVAC_BUILD_DIR="/go/src/github.com/camptocamp/bivac"
 ARG BIVAC_PKG="bivac"
 ENV BIVAC_SERVER_PSK=""
+ENV USERNAME="ansible"
+ENV UID="1000"
 RUN xargs -a /apk_packages apk add --no-cache --update \
+    && useradd -l -u ${UID} -U -s /bin/bash -m ${USERNAME} \
     && rm -rf \
      /root/.ansible \
      /root/.cache \
      /tmp/* \
      /var/cache/* 
-
 COPY --from=builder /etc/ssl /etc/ssl
-COPY --from=builder ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
-COPY --from=builder ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
-COPY --from=builder ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
-COPY --from=builder ${BIVAC_BUILD_DIR}/providers-config.default.toml /
+COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=500 ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
+COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=500 ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
+COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=500 ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
+COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=644 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
 HEALTHCHECK CMD curl --fail -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
 ENTRYPOINT ["/bin/bivac"]
 CMD [""]
