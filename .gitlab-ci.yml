@@ -1,0 +1,38 @@
+include:
+  - project: 'Bigouden/gitlab-ci-templates'
+    file: '.gitlab-ci-docker.yml'
+
+.standalone:
+  image:
+    name: $CONTAINER_TEST_IMAGE
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []  
+    
+stages:
+  - Quality
+  - Security
+  - Build
+  - Commands
+  - Inspect
+  - Release
+  - Clean
+
+Rclone:
+  stage: Commands
+  extends: .standalone
+  script:
+    - rclone version
+
+Restic: 
+  stage: Commands
+  extends: .standalone
+  script:
+    - restic version
+
+Bivac: 
+  stage: Commands
+  extends: .standalone
+  script:
+    - bivac
