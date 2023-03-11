@@ -73,5 +73,6 @@ COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=644 ${BIVAC_BUILD_DI
 HEALTHCHECK CMD curl -s -f -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
+EXPOSE 8182
 ENTRYPOINT ["/bin/bivac"]
 CMD [""]
