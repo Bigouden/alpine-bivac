@@ -22,6 +22,7 @@ include:
     - apk add --no-cache --update curl
   variables:
     GIT_STRATEGY: none
+    BIVAC_ORCHESTRATOR: "docker"
   dependencies: []
 
 variables:
