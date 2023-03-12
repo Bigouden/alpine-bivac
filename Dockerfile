@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1-labs
 FROM golang:alpine as builder
-
 ENV RCLONE_REPOSITORY="https://github.com/rclone/rclone.git"
 ENV RCLONE_VERSION="v1.61.1"
 ENV RCLONE_BUILD_DIR="/go/src/github.com/rclone/rclone"
@@ -10,7 +9,7 @@ ENV RESTIC_VERSION="v0.15.1"
 ENV RESTIC_BUILD_DIR="/go/src/github.com/restic/restic"
 ENV RESTIC_PKG="restic"
 ENV BIVAC_REPOSITORY="https://github.com/camptocamp/bivac.git"
-ENV BIVAC_VERSION="2.5.1"
+ENV BIVAC_VERSION="master"
 ENV BIVAC_BUILD_DIR="/go/src/github.com/camptocamp/bivac"
 ENV BIVAC_PKG="bivac"
 ENV GO111MODULE="on"
