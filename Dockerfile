@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1-labs
 FROM golang:alpine as builder
-
 ENV RCLONE_REPOSITORY="https://github.com/rclone/rclone.git"
 ENV RCLONE_VERSION="v1.61.1"
 ENV RCLONE_BUILD_DIR="/go/src/github.com/rclone/rclone"
