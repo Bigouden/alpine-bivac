@@ -24,15 +24,15 @@ WORKDIR ${RCLONE_BUILD_DIR}
 RUN go get ./... \
     && go build -o "${RCLONE_PKG}" \
                 -ldflags="-s \
-                          -X github.com/rclone/rclone/fs.Version=${RCLONE_VERSION}" \
-    && chmod 4755+s "${RCLONE_PKG}"
+                          -X github.com/rclone/rclone/fs.Version=${RCLONE_VERSION}"
+RUN chmod 4755 "${RCLONE_PKG}"
 
 # RESTIC
 ADD ${RESTIC_REPOSITORY}#${RESTIC_VERSION} ${RESTIC_BUILD_DIR}
 WORKDIR ${RESTIC_BUILD_DIR}
 RUN go get ./... \
-    && go run build.go \
-    && chmod 4755 "${RESTIC_PKG}"
+    && go run build.go
+RUN chmod 4755 "${RESTIC_PKG}"
 
 # BIVAC
 ADD --keep-git-dir=true ${BIVAC_REPOSITORY}#${BIVAC_VERSION} ${BIVAC_BUILD_DIR}
@@ -45,8 +45,8 @@ RUN apk add git \
                       -X main.version=${BIVAC_VERSION} \
                       -X main.buildDate=$(date +%Y-%m-%d) \
                       -X main.commitSha1=$(git rev-parse HEAD) \
-                      -installsuffix cgo" \
-    && chmod 4755 "${BIVAC_PKG}"
+                      -installsuffix cgo"
+RUN chmod 4755 "${BIVAC_PKG}"
 
 FROM alpine:3.17
 LABEL maintainer="Thomas GUIRRIEC <thomas@guirriec.fr>"
