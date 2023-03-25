@@ -25,12 +25,14 @@ RUN go get ./... \
     && go build -o "${RCLONE_PKG}" \
                 -ldflags="-s \
                           -X github.com/rclone/rclone/fs.Version=${RCLONE_VERSION}"
+RUN chmod 4755 "${RCLONE_PKG}"
 
 # RESTIC
 ADD ${RESTIC_REPOSITORY}#${RESTIC_VERSION} ${RESTIC_BUILD_DIR}
 WORKDIR ${RESTIC_BUILD_DIR}
 RUN go get ./... \
     && go run build.go
+RUN chmod 4755 "${RESTIC_PKG}"
 
 # BIVAC
 ADD --keep-git-dir=true ${BIVAC_REPOSITORY}#${BIVAC_VERSION} ${BIVAC_BUILD_DIR}
@@ -44,6 +46,7 @@ RUN apk add git \
                       -X main.buildDate=$(date +%Y-%m-%d) \
                       -X main.commitSha1=$(git rev-parse HEAD) \
                       -installsuffix cgo"
+RUN chmod 4755 "${BIVAC_PKG}"
 
 FROM alpine:3.17
 LABEL maintainer="Thomas GUIRRIEC <thomas@guirriec.fr>"
@@ -57,6 +60,10 @@ ENV BIVAC_SERVER_PSK=""
 ENV USERNAME="bivac"
 ENV UID="1000"
 COPY apk_packages /
+COPY --from=builder /etc/ssl /etc/ssl
+COPY --from=builder --chown=root:root ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
+COPY --from=builder --chown=root:root ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
+COPY --from=builder --chown=root:root ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
 RUN xargs -a /apk_packages apk add --no-cache --update \
     && useradd -l -u ${UID} -U -s /bin/sh -m ${USERNAME} \
     && rm -rf \
@@ -64,10 +71,6 @@ RUN xargs -a /apk_packages apk add --no-cache --update \
      /root/.cache \
      /tmp/* \
      /var/cache/* 
-COPY --from=builder /etc/ssl /etc/ssl
-COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=500 ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
-COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=500 ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
-COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=500 ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
 COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=644 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
 HEALTHCHECK CMD curl -s -f -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
 USER ${USERNAME}
