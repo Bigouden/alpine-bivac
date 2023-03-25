@@ -1,0 +1,2 @@
+rules:
+  highestWastedBytes: 1MB
