@@ -70,7 +70,7 @@ COPY --from=builder --chown=root:root --chmod=755 ${RCLONE_BUILD_DIR}/${RCLONE_P
 COPY --from=builder --chown=root:root --chmod=755 ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
 COPY --from=builder --chown=${USERNAME}:${USERNAME} --chmod=644 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
 # SUID Files Permissions
-RUN chmod u+s /bin/{RESTIC_PKG} /bin/{RCLONE_PKG} /bin/{BIVAC_PKG}
+RUN chmod u+s /bin/${RESTIC_PKG} /bin/${RCLONE_PKG} /bin/${BIVAC_PKG}
 HEALTHCHECK CMD curl -s -f -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
