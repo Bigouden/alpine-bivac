@@ -1,0 +1,4 @@
+SPELL_CSPELL_PRE_COMMANDS:
+  - command: npm install --prefix /node-deps/ @cspell/dict-fr-fr
+  - command: cspell link add @cspell/dict-fr-fr
+SPELL_MISSPELL_ARGUMENTS: -i "exemple"
