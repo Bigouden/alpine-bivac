@@ -24,6 +24,7 @@
     "GUIRRIEC",
     "NOPASSWD",
     "Posix",
+    "bivac",
     "certifi",
     "cffi",
     "chardet",
