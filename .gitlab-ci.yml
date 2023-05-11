@@ -1,8 +1,9 @@
+---
 include:
-  - project: 'Bigouden/gitlab-ci-templates'
-    file: '.gitlab-ci-docker.yml'
-  - project: 'Bigouden/gitlab-ci-templates'
-    file: '.gitlab-ci-prometheus.yml'
+  - project: "Bigouden/gitlab-ci-templates"
+    file: ".gitlab-ci-docker.yml"
+  - project: "Bigouden/gitlab-ci-templates"
+    file: ".gitlab-ci-prometheus.yml"
 
 .standalone:
   image:
@@ -10,7 +11,7 @@ include:
     entrypoint: [""]
   variables:
     GIT_STRATEGY: none
-  dependencies: []  
+  dependencies: []
 
 .services:
   services:
@@ -28,7 +29,7 @@ include:
 variables:
   HADOLINT_ALLOW_FAILURE: "true"
   PROMETHEUS_EXPORTER_PORT: "8182"
-    
+
 stages:
   - Quality
   - Security
@@ -45,13 +46,13 @@ Rclone:
   script:
     - rclone version
 
-Restic: 
+Restic:
   stage: Commands
   extends: .standalone
   script:
     - restic version
 
-Bivac: 
+Bivac:
   stage: Commands
   extends: .standalone
   script:
