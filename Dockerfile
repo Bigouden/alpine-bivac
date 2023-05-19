@@ -18,6 +18,7 @@ ENV GOARCH="amd64"
 ENV CGO_ENABLED="0" 
 
 # RCLONE
+#checkov:skip=CKV_DOCKER_4
 ADD ${RCLONE_REPOSITORY}#${RCLONE_VERSION} ${RCLONE_BUILD_DIR}
 RUN ls -lR /go
 WORKDIR ${RCLONE_BUILD_DIR}
@@ -48,7 +49,7 @@ RUN apk add git \
                       -installsuffix cgo"
 RUN chmod 4755 "${BIVAC_PKG}"
 
-FROM alpine:3.17
+FROM alpine:3.18
 LABEL maintainer="Thomas GUIRRIEC <thomas@guirriec.fr>"
 ARG RCLONE_BUILD_DIR="/go/src/github.com/rclone/rclone"
 ARG RCLONE_PKG="rclone"
