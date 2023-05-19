@@ -29,6 +29,7 @@ RUN go get ./... \
 RUN chmod 4755 "${RCLONE_PKG}"
 
 # RESTIC
+#checkov:skip=CKV_DOCKER_4
 ADD ${RESTIC_REPOSITORY}#${RESTIC_VERSION} ${RESTIC_BUILD_DIR}
 WORKDIR ${RESTIC_BUILD_DIR}
 RUN go get ./... \
@@ -36,6 +37,7 @@ RUN go get ./... \
 RUN chmod 4755 "${RESTIC_PKG}"
 
 # BIVAC
+#checkov:skip=CKV_DOCKER_4
 ADD --keep-git-dir=true ${BIVAC_REPOSITORY}#${BIVAC_VERSION} ${BIVAC_BUILD_DIR}
 WORKDIR ${BIVAC_BUILD_DIR}
 RUN apk add git \
