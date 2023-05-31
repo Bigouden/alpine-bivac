@@ -57,3 +57,9 @@ Bivac:
   extends: .standalone
   script:
     - bivac
+
+Fusermount:
+  stage: Commands
+  extends: .standalone
+  script:
+    - fusermount -V
