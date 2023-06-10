@@ -71,7 +71,6 @@ ARG BIVAC_PKG="bivac"
 ENV BIVAC_SERVER_PSK=""
 ENV USERNAME="bivac"
 ENV UID="1000"
-COPY apk_packages /
 COPY --from=gobuilder /etc/ssl /etc/ssl
 COPY --from=gobuilder ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
 COPY --from=gobuilder ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
@@ -80,7 +79,7 @@ RUN --mount=type=bind,from=builder,source=/usr/bin/envsubst,target=/usr/bin/envs
     --mount=type=bind,from=builder,source=/usr/lib/libintl.so.8,target=/usr/lib/libintl.so.8 \
     --mount=type=bind,from=builder,source=/tmp,target=/tmp \
     --mount=type=cache,id=apk_cache,target=/var/cache/apk \
-    apk add --update `envsubst < /tmp/apk_packages` \
+    apk --update add `envsubst < /tmp/apk_packages` \
     && useradd -l -u "${UID}" -U -s /bin/sh -m "${USERNAME}"
 COPY --from=gobuilder --chown=${USERNAME}:${USERNAME} --chmod=644 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
 HEALTHCHECK CMD curl -s -f -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
