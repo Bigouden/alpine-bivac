@@ -26,6 +26,19 @@ include:
     BIVAC_ORCHESTRATOR: "docker"
   dependencies: []
 
+.services_owasp_zap:
+  services:
+    - name: $CONTAINER_TEST_IMAGE
+      alias: target
+      command: ["manager"]
+  image: 
+    name: $CONTAINER_OWASP_ZAP_IMAGE
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: none
+    BIVAC_ORCHESTRATOR: "docker"
+  dependencies: []
+
 variables:
   HADOLINT_ALLOW_FAILURE: "true"
   PROMETHEUS_EXPORTER_PORT: "8182"
