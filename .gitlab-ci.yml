@@ -31,7 +31,7 @@ include:
     - name: $CONTAINER_TEST_IMAGE
       alias: target
       command: ["manager"]
-  image: 
+  image:
     name: $CONTAINER_OWASP_ZAP_IMAGE
     entrypoint: [""]
   variables:
