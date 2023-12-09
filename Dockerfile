@@ -4,7 +4,7 @@
 ARG ALPINE_VERSION="3.19"
 
 FROM alpine:${ALPINE_VERSION} AS builder
-COPY apk_packages /tmp/
+COPY --link apk_packages /tmp/
 # hadolint ignore=DL3018
 RUN --mount=type=cache,id=builder_apk_cache,target=/var/cache/apk \
     apk add gettext-envsubst
@@ -29,7 +29,7 @@ ENV CGO_ENABLED="0"
 
 # RCLONE
 #checkov:skip=CKV_DOCKER_4
-ADD ${RCLONE_REPOSITORY}#${RCLONE_VERSION} ${RCLONE_BUILD_DIR}
+ADD --link ${RCLONE_REPOSITORY}#${RCLONE_VERSION} ${RCLONE_BUILD_DIR}
 RUN ls -lR /go
 WORKDIR ${RCLONE_BUILD_DIR}
 RUN go get ./... \
@@ -39,14 +39,14 @@ RUN go get ./... \
 RUN chmod 4755 "${RCLONE_PKG}"
 
 # RESTIC
-ADD ${RESTIC_REPOSITORY}#${RESTIC_VERSION} ${RESTIC_BUILD_DIR}
+ADD --link ${RESTIC_REPOSITORY}#${RESTIC_VERSION} ${RESTIC_BUILD_DIR}
 WORKDIR ${RESTIC_BUILD_DIR}
 RUN go get ./... \
     && go run build.go
 RUN chmod 4755 "${RESTIC_PKG}"
 
 # BIVAC
-ADD --keep-git-dir=true ${BIVAC_REPOSITORY}#${BIVAC_VERSION} ${BIVAC_BUILD_DIR}
+ADD --link --keep-git-dir=true ${BIVAC_REPOSITORY}#${BIVAC_VERSION} ${BIVAC_BUILD_DIR}
 WORKDIR ${BIVAC_BUILD_DIR}
 RUN --mount=type=cache,id=gobuilder_apk_cache,target=/var/cache/apk \
     apk add git \
@@ -71,17 +71,18 @@ ARG BIVAC_PKG="bivac"
 ENV BIVAC_SERVER_PSK=""
 ENV USERNAME="bivac"
 ENV UID="1000"
-COPY --from=gobuilder /etc/ssl /etc/ssl
-COPY --from=gobuilder ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
-COPY --from=gobuilder ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
-COPY --from=gobuilder ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
+COPY --link --from=gobuilder /etc/ssl /etc/ssl
+COPY --link --from=gobuilder ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
+COPY --link --from=gobuilder ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
+COPY --link --from=gobuilder ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
+# hadolint ignore=SC2006
 RUN --mount=type=bind,from=builder,source=/usr/bin/envsubst,target=/usr/bin/envsubst \
     --mount=type=bind,from=builder,source=/usr/lib/libintl.so.8,target=/usr/lib/libintl.so.8 \
     --mount=type=bind,from=builder,source=/tmp,target=/tmp \
     --mount=type=cache,id=apk_cache,target=/var/cache/apk \
     apk --update add `envsubst < /tmp/apk_packages` \
     && useradd -l -u "${UID}" -U -s /bin/sh -m "${USERNAME}"
-COPY --from=gobuilder --chown=${USERNAME}:${USERNAME} --chmod=644 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
+COPY --link --from=gobuilder --chown=${USERNAME}:${USERNAME} --chmod=644 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
 HEALTHCHECK CMD curl -s -f -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
