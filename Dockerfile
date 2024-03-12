@@ -11,7 +11,7 @@ RUN --mount=type=cache,id=builder_apk_cache,target=/var/cache/apk \
 
 FROM golang:alpine as gobuilder
 ENV RCLONE_REPOSITORY="https://github.com/rclone/rclone.git"
-ENV RCLONE_VERSION="v1.65.1"
+ENV RCLONE_VERSION="v1.66.0"
 ENV RCLONE_BUILD_DIR="/go/src/github.com/rclone/rclone"
 ENV RCLONE_PKG="rclone"
 ENV RESTIC_REPOSITORY="https://github.com/restic/restic.git"
