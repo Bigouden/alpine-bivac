@@ -9,7 +9,7 @@ COPY --link apk_packages /tmp/
 RUN --mount=type=cache,id=builder_apk_cache,target=/var/cache/apk \
     apk add gettext-envsubst
 
-FROM golang:alpine as gobuilder
+FROM golang:alpine AS gobuilder
 ENV RCLONE_REPOSITORY="https://github.com/rclone/rclone.git"
 ENV RCLONE_VERSION="v1.66.0"
 ENV RCLONE_BUILD_DIR="/go/src/github.com/rclone/rclone"
