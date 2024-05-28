@@ -36,14 +36,14 @@ RUN go get ./... \
     && go build -o "${RCLONE_PKG}" \
                 -ldflags="-s \
                           -X github.com/rclone/rclone/fs.Version=${RCLONE_VERSION}"
-RUN chmod u+s "${RCLONE_PKG}"
+RUN chmod 4755 "${RCLONE_PKG}"
 
 # RESTIC
 ADD --link ${RESTIC_REPOSITORY}#${RESTIC_VERSION} ${RESTIC_BUILD_DIR}
 WORKDIR ${RESTIC_BUILD_DIR}
 RUN go get ./... \
     && go run build.go
-RUN chmod u+s "${RESTIC_PKG}"
+RUN chmod 4755 "${RESTIC_PKG}"
 
 # BIVAC
 ADD --link --keep-git-dir=true ${BIVAC_REPOSITORY}#${BIVAC_VERSION} ${BIVAC_BUILD_DIR}
@@ -58,7 +58,7 @@ RUN --mount=type=cache,id=gobuilder_apk_cache,target=/var/cache/apk \
                       -X main.buildDate=$(date +%Y-%m-%d) \
                       -X main.commitSha1=$(git rev-parse HEAD) \
                       -installsuffix cgo"
-RUN chmod u+s "${BIVAC_PKG}"
+RUN chmod 4755 "${BIVAC_PKG}"
 
 FROM alpine:${ALPINE_VERSION}
 LABEL maintainer="Thomas GUIRRIEC <thomas@guirriec.fr>"
@@ -82,7 +82,7 @@ RUN --mount=type=bind,from=builder,source=/usr/bin/envsubst,target=/usr/bin/envs
     --mount=type=cache,id=apk_cache,target=/var/cache/apk \
     apk --update add `envsubst < /tmp/apk_packages` \
     && useradd -l -u "${UID}" -U -s /bin/sh -m "${USERNAME}"
-COPY --link --from=gobuilder --chown=${USERNAME}:${USERNAME} --chmod=444 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
+COPY --link --from=gobuilder --chown=${USERNAME}:${USERNAME} --chmod=644 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
 HEALTHCHECK CMD curl -s -f -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
