@@ -24,6 +24,7 @@ include:
   variables:
     GIT_STRATEGY: none
     BIVAC_ORCHESTRATOR: "docker"
+    BIVAC_DOCKER_ENDPOINT: $BIVAC_DOCKER_ENDPOINT
   dependencies: []
 
 .services_owasp_zap:
