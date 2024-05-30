@@ -42,14 +42,12 @@ RUN go get ./... \
     && go build -o "${RCLONE_PKG}" \
                 -ldflags="-s \
                           -X github.com/rclone/rclone/fs.Version=${RCLONE_VERSION}"
-RUN chown "${USERNAME}":"${USERNAME}" "${RCLONE_PKG}"
 
 # RESTIC
 ADD --link ${RESTIC_REPOSITORY}#${RESTIC_VERSION} ${RESTIC_BUILD_DIR}
 WORKDIR ${RESTIC_BUILD_DIR}
 RUN go get ./... \
     && go run build.go
-RUN chown "${USERNAME}":"${USERNAME}" "${RESTIC_PKG}"
 
 # BIVAC
 ADD --link --keep-git-dir=true ${BIVAC_REPOSITORY}#${BIVAC_VERSION} ${BIVAC_BUILD_DIR}
@@ -64,7 +62,6 @@ RUN --mount=type=cache,id=gobuilder_apk_cache,target=/var/cache/apk \
                       -X main.buildDate=$(date +%Y-%m-%d) \
                       -X main.commitSha1=$(git rev-parse HEAD) \
                       -installsuffix cgo"
-RUN chown "${USERNAME}":"${USERNAME}" "${BIVAC_PKG}"
 
 FROM alpine:${ALPINE_VERSION}
 LABEL maintainer="Thomas GUIRRIEC <thomas@guirriec.fr>"
@@ -78,9 +75,9 @@ ENV BIVAC_SERVER_PSK=""
 ENV USERNAME="bivac"
 ENV UID="1000"
 COPY --link --from=gobuilder /etc/ssl /etc/ssl
-COPY --link --from=gobuilder ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
-COPY --link --from=gobuilder ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
-COPY --link --from=gobuilder ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
+COPY --link --from=gobuilder --chmod=4755 ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
+COPY --link --from=gobuilder --chmod=4755 ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
+COPY --link --from=gobuilder --chmod=4755 ${BIVAC_BUILD_DIR}/${BIVAC_PKG} /bin/${BIVAC_PKG}
 # hadolint ignore=SC2006
 RUN --mount=type=bind,from=builder,source=/usr/bin/envsubst,target=/usr/bin/envsubst \
     --mount=type=bind,from=builder,source=/usr/lib/libintl.so.8,target=/usr/lib/libintl.so.8 \
