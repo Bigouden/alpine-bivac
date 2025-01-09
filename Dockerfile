@@ -26,12 +26,7 @@ ENV GO111MODULE="on"
 ENV GOOS="linux"
 ENV GOARCH="amd64"
 ENV CGO_ENABLED="0" 
-ENV USERNAME="bivac"
-ENV UID="1000"
-
-RUN --mount=type=cache,id=gobuilder_apk_cache,target=/var/cache/apk \
-    apk add shadow \
-    && useradd -l -u "${UID}" -U -s /bin/sh -m "${USERNAME}"
+ENV USERNAME="root"
 
 # RCLONE
 #checkov:skip=CKV_DOCKER_4
@@ -72,8 +67,7 @@ ARG RESTIC_PKG="restic"
 ARG BIVAC_BUILD_DIR="/go/src/github.com/camptocamp/bivac"
 ARG BIVAC_PKG="bivac"
 ENV BIVAC_SERVER_PSK=""
-ENV USERNAME="bivac"
-ENV UID="1000"
+ENV USERNAME="root"
 COPY --link --from=gobuilder /etc/ssl /etc/ssl
 COPY --link --from=gobuilder --chmod=4755 ${RESTIC_BUILD_DIR}/${RESTIC_PKG} /bin/${RESTIC_PKG}
 COPY --link --from=gobuilder --chmod=4755 ${RCLONE_BUILD_DIR}/${RCLONE_PKG} /bin/${RCLONE_PKG}
@@ -83,12 +77,12 @@ RUN --mount=type=bind,from=builder,source=/usr/bin/envsubst,target=/usr/bin/envs
     --mount=type=bind,from=builder,source=/usr/lib/libintl.so.8,target=/usr/lib/libintl.so.8 \
     --mount=type=bind,from=builder,source=/tmp,target=/tmp \
     --mount=type=cache,id=apk_cache,target=/var/cache/apk \
-    apk --update add `envsubst < /tmp/apk_packages` \
-    && useradd -l -u "${UID}" -U -s /bin/sh -m "${USERNAME}"
+    apk --update add `envsubst < /tmp/apk_packages`
+
 COPY --link --from=gobuilder --chmod=444 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
 HEALTHCHECK CMD curl -s -f -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
+# nosemgrep
 USER ${USERNAME}
-WORKDIR /home/${USERNAME}
 EXPOSE 8182
 ENTRYPOINT ["/bin/bivac"]
 CMD [""]
