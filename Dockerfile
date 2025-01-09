@@ -81,6 +81,7 @@ RUN --mount=type=bind,from=builder,source=/usr/bin/envsubst,target=/usr/bin/envs
 
 COPY --link --from=gobuilder --chmod=444 ${BIVAC_BUILD_DIR}/providers-config.default.toml /
 HEALTHCHECK CMD curl -s -f -H "Authorization: Bearer ${BIVAC_SERVER_PSK}" http://127.0.0.1:8182/ping # nosemgrep
+ADD providers-config.custom.toml /
 # nosemgrep
 USER ${USERNAME}
 EXPOSE 8182
