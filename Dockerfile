@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1-labs
 # kics-scan disable=ae9c56a6-3ed1-4ac0-9b54-31267f51151d,4b410d24-1cbe-4430-a632-62c9a931cf1c,d3499f6d-1651-41bb-a9a7-de925fea487b,aa93e17f-b6db-4162-9334-c70334e7ac28,9513a694-aa0d-41d8-be61-3271e056f36b
 
-ARG ALPINE_VERSION="3.21"
+ARG ALPINE_VERSION="3.22"
 
 FROM alpine:${ALPINE_VERSION} AS builder
 COPY --link apk_packages /tmp/
@@ -11,11 +11,11 @@ RUN --mount=type=cache,id=builder_apk_cache,target=/var/cache/apk \
 
 FROM golang:alpine AS gobuilder
 ENV RCLONE_REPOSITORY="https://github.com/rclone/rclone.git"
-ENV RCLONE_VERSION="v1.69.0"
+ENV RCLONE_VERSION="v1.69.3"
 ENV RCLONE_BUILD_DIR="/go/src/github.com/rclone/rclone"
 ENV RCLONE_PKG="rclone"
 ENV RESTIC_REPOSITORY="https://github.com/restic/restic.git"
-ENV RESTIC_VERSION="v0.17.3"
+ENV RESTIC_VERSION="v0.18.0"
 ENV RESTIC_BUILD_DIR="/go/src/github.com/restic/restic"
 ENV RESTIC_PKG="restic"
 ENV BIVAC_REPOSITORY="https://github.com/camptocamp/bivac.git"
